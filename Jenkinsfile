@@ -31,10 +31,14 @@ pipeline {
         
         
         stage('Deploy') {
-            steps {
-                sh 'cd /home/ubuntu/kubernetes-installation-microk8s'
-                sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f service.yaml'
+    steps {
+        dir('/home/ubuntu/kubernetes-installation-microk8s') {
+            sh 'kubectl apply -f deployment.yaml'
+            sh 'kubectl apply -f service.yaml'
+        }
+    }
+}
+
             }
         }
     }
