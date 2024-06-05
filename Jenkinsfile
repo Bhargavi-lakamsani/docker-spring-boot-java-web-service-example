@@ -1,5 +1,5 @@
 pipeline {
-     agent { label 'docker' }
+     agent any
     
     environment {
         DOCKER_CREDENTIALS = credentials("bhargavi-docker")
