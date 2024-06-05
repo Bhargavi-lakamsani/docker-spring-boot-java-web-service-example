@@ -1,6 +1,8 @@
-FROM openjdk:8-jre-alpine
-RUN apk update && apk add bash
+FROM openjdk:8-jre-alpine as checkout
+RUN apk add --no-cache git
 WORKDIR /app
-COPY target/*.jar /app/
+RUN git https://github.com/Bhargavi-lakamsani/docker-spring-boot-java-web-service-example.git
+RUN mvn clean install
+COPY /target/*.war /usr/local/tomcat/webapps/
+
 EXPOSE 8080
-CMD ["java", "-jar", "docker-java-app-example.jar"]
