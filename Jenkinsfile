@@ -22,7 +22,7 @@ pipeline {
         
         stage('Push') {
             steps {
-                  sh "$DOCKER_CREDENTIALS
+                  sh "$DOCKER_CREDENTIALS"
                 sh "docker push $DOCKER_IMAGE_NAME"
             }
         }
