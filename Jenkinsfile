@@ -41,12 +41,9 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // Moving the file to a directory where jenkins has permissions
-                sh 'mkdir -p /var/lib/jenkins/workspace/kubernetes-microk8s'
-                sh 'mv /var/lib/jenkins/workspace/kubernetes/deployment.yaml /var/lib/jenkins/workspace/kubernetes-microk8s/deployment.yaml'
-                sh 'mv /var/lib/jenkins/workspace/kubernetes/service.yaml /var/lib/jenkins/workspace/kubernetes-microk8s/service.yaml'
-                sh 'kubectl apply -f /var/lib/jenkins/workspace/kubernetes-microk8s/deployment.yaml'
-                sh 'kubectl apply -f /var/lib/jenkins/workspace/kubernetes-microk8s/service.yaml'
+               
+                    sh 'microk8s kubectl apply -f k8s/deployment.yaml'
+                    sh 'microk8s kubectl apply -f k8s/service.yaml'
             }
         }
     }
