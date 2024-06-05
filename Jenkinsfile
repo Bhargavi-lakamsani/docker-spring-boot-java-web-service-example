@@ -1,23 +1,23 @@
 pipeline {
     agent any
-    
+
     environment {
         DOCKER_IMAGE_NAME = 'bhargavilakamsani/javaapp:latest'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
-               checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Bhargavi-lakamsani/docker-spring-boot-java-web-service-example.git']])
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Bhargavi-lakamsani/docker-spring-boot-java-web-service-example.git']])
             }
         }
-        
+
         stage('Build') {
             steps {
                 sh 'docker build -t $DOCKER_IMAGE_NAME .'
             }
         }
-        
+
         stage('Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'bhargavi-docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -28,15 +28,26 @@ pipeline {
                 }
             }
         }
-        
-        
+
+        stage('Install kubectl') {
+            steps {
+                sh '''
+                curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+                chmod +x kubectl
+                sudo mv kubectl /usr/local/bin/
+                '''
+            }
+        }
+
         stage('Deploy') {
-    steps {
-        sh 'sudo mv /var/lib/jenkins/workspace/kubernetes/deployment.yaml /home/ubuntu/kubernetes-installation-microk8s'
-         sh 'sudo mv /var/lib/jenkins/workspace/kubernetes/service.yaml /home/ubuntu/kubernetes-installation-microk8s'
-            sh 'kubectl apply -f deployment.yaml'
-            sh 'kubectl apply -f service.yaml'
-           }
-         }
+            steps {
+                // Moving the file to a directory where jenkins has permissions
+                sh 'mkdir -p /var/lib/jenkins/workspace/kubernetes-microk8s'
+                sh 'mv /var/lib/jenkins/workspace/kubernetes/deployment.yaml /var/lib/jenkins/workspace/kubernetes-microk8s/deployment.yaml'
+                sh 'mv /var/lib/jenkins/workspace/kubernetes/service.yaml /var/lib/jenkins/workspace/kubernetes-microk8s/service.yaml'
+                sh 'kubectl apply -f /var/lib/jenkins/workspace/kubernetes-microk8s/deployment.yaml'
+                sh 'kubectl apply -f /var/lib/jenkins/workspace/kubernetes-microk8s/service.yaml'
+            }
+        }
     }
 }
