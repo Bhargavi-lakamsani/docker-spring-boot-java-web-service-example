@@ -1,10 +1,8 @@
 pipeline {
-     agent any
+    agent any
     
     environment {
-        DOCKER_CREDENTIALS = credentials("bhargavi-docker")
         DOCKER_IMAGE_NAME = 'bhargavilakamsani/javaapp:latest'
-     
     }
     
     stages {
@@ -22,18 +20,22 @@ pipeline {
         
         stage('Push') {
             steps {
-                  sh "$DOCKER_CREDENTIALS"
-                sh "docker push $DOCKER_IMAGE_NAME"
+                withCredentials([usernamePassword(credentialsId: 'bhargavi-docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    docker push $DOCKER_IMAGE_NAME
+                    '''
+                }
             }
         }
         
         stage('Deploy') {
             steps {
-                       sh "kubectl apply -f deployment.yaml"
-                       sh "kubectl apply -f service.yaml"
-              
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f service.yaml'
             }
         }
     }
 }
+
 
