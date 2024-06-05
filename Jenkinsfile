@@ -3,8 +3,8 @@ pipeline {
     
     environment {
         DOCKER_CREDENTIALS = credentials("bhargavi-docker")
-        DOCKER_IMAGE_NAME = 'bhargavilakamsani/javaapp'
-        DOCKER_IMAGE_TAG = "${BUILD_NUMBER}"
+        DOCKER_IMAGE_NAME = 'bhargavilakamsani/javaapp:latest'
+     
     }
     
     stages {
@@ -16,14 +16,14 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .'
+                sh 'docker build -t $DOCKER_IMAGE_NAME .'
             }
         }
         
         stage('Push') {
             steps {
                   sh "$DOCKER_CREDENTIALS
-                sh "docker push $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG"
+                sh "docker push $DOCKER_IMAGE_NAME"
             }
         }
         
