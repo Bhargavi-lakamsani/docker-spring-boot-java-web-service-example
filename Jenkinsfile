@@ -32,8 +32,8 @@ pipeline {
         
         stage('Deploy') {
     steps {
-        sh 'mv /var/lib/jenkins/workspace/kubernetes/deployment.yaml /home/ubuntu/kubernetes-installation-microk8s'
-         sh 'mv /var/lib/jenkins/workspace/kubernetes/service.yaml /home/ubuntu/kubernetes-installation-microk8s'
+        sh 'sudo mv /var/lib/jenkins/workspace/kubernetes/deployment.yaml /home/ubuntu/kubernetes-installation-microk8s'
+         sh 'sudo mv /var/lib/jenkins/workspace/kubernetes/service.yaml /home/ubuntu/kubernetes-installation-microk8s'
             sh 'kubectl apply -f deployment.yaml'
             sh 'kubectl apply -f service.yaml'
            }
