@@ -32,7 +32,7 @@ pipeline {
         
         stage('Deploy') {
     steps {
-        sh 'cd /var/lib/jenkins/workspace/kubernetes,
+        sh 'cd /var/lib/jenkins/workspace/kubernetes'
             sh 'kubectl apply -f deployment.yaml'
             sh 'kubectl apply -f service.yaml'
            }
