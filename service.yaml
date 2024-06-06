@@ -7,7 +7,8 @@ spec:
   selector:
     app: my-java-application
   ports:
-    port: 8080
-    targetPort: 8080
-    nodePort: 30007 
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30007
+
 
