@@ -34,17 +34,18 @@ pipeline {
                 sh '''
                 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
                 chmod +x kubectl
-                sudo mv kubectl /usr/local/bin/
+                sudo -A mv kubectl /usr/local/bin/
+                rm -f askpass.sh
                 '''
             }
         }
 
         stage('Deploy') {
-            steps {
-               
+            steps { 
                     sh 'microk8s kubectl apply -f deployment.yaml'
                     sh 'microk8s kubectl apply -f service.yaml'
+                }
             }
         }
     }
-}
+
