@@ -6,7 +6,6 @@ RUN mvn clean install
 
 FROM openjdk:8-jre-alpine
 WORKDIR /app
-COPY --from=build /app/docker-spring-boot-java-web-service-example/target/*.jar /app/
+COPY --from=build /app/docker-spring-boot-java-web-service-example/target/*.jar /app/app.jar
 EXPOSE 8080
-CMD ["java", "-jar", "your-application.jar"]
-
+CMD ["java", "-jar", "/app/app.jar"]
