@@ -29,21 +29,34 @@ pipeline {
             }
         }
 
-        stage('deploy') {
+        stage('Deploy') {
             steps {
                 sshagent(['k8s']) {
-                 sh "scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/k8s-java/*.yaml ubuntu@13.201.8.113:/home/ubuntu"
-                    script{
-                        try{ 
-                            sh "ssh ubuntu@13.201.8.113 kubectl apply -f ."
-                        }catch(error){
-                            sh "ssh ubuntu@13.201.8.113 kubectl create -f ."
-            
-                               }
-                             }
-                           }
+                    // Transfer YAML files to the remote machine
+                    sh 'scp -o StrictHostKeyChecking=no deployment.yaml service.yaml ubuntu@13.201.8.113:/home/ubuntu'
+                    
+                    script {
+                        try {
+                            // Apply Kubernetes configurations
+                            sh 'ssh ubuntu@13.201.8.113 kubectl apply -f /home/ubuntu/deployment.yaml'
+                            sh 'ssh ubuntu@13.201.8.113 kubectl apply -f /home/ubuntu/service.yaml'
+                        } catch (error) {
+                            // Fallback to create if apply fails
+                            sh 'ssh ubuntu@13.201.8.113 kubectl create -f /home/ubuntu/deployment.yaml'
+                            sh 'ssh ubuntu@13.201.8.113 kubectl create -f /home/ubuntu/service.yaml'
                         }
-                     }
-                 }
-               }
+                    }
+                }
+            }
+        }
+    }
 
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
