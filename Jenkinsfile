@@ -29,24 +29,21 @@ pipeline {
             }
         }
 
-        stage('Install kubectl') {
+        stage('deploy') {
             steps {
-                sh '''
-                curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                chmod +x kubectl
-                sudo mv kubectl /usr/local/bin/
-                '''
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                withKubeConfig([credentialsId: 'kubernetes']) {
-                    sh 'kubectl apply -f k8s/deployment.yaml'
-                    sh 'kubectl apply -f k8s/service.yaml'
-                }
-            }
-        }
-    }
-}
+                sshagent(['k8s']) {
+                 sh "scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/k8s-java/*.yaml ubuntu@13.201.8.113:/home/ubuntu"
+                    script{
+                        try{ 
+                            sh "ssh ubuntu@13.201.8.113 kubectl apply -f ."
+                        }catch(error){
+                            sh "ssh ubuntu@13.201.8.113 kubectl create -f ."
+            
+                               }
+                             }
+                           }
+                        }
+                     }
+                 }
+               }
 
