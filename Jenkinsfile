@@ -33,12 +33,13 @@ pipeline {
             steps {
                 sshagent(['k8s']) {
                     // Transfer YAML files to the remote machine
-                    sh 'scp -o StrictHostKeyChecking=no deployment.yaml service.yaml ubuntu@13.201.8.113:/home/ubuntu'
+                    sh 'scp -o StrictHostKeyChecking=no deployment.yaml service.yaml ubuntu@13.201.8.113:/home/ubuntu/kubernetes-installation-microk8s'
                     
                     script {
                         try {
                             // Apply Kubernetes configurations
                             sh 'ssh ubuntu@13.201.8.113'
+                            sh 'cd /home/ubuntu/kubernetes-installation-microk8s'
                             sh 'kubectl apply -f /home/ubuntu/deployment.yaml'
                             sh 'kubectl apply -f /home/ubuntu/service.yaml'
                         } catch (error) {
