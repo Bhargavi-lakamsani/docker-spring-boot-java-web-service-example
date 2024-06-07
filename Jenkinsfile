@@ -36,6 +36,9 @@ pipeline {
                     sh 'scp -o StrictHostKeyChecking=no deployment.yaml service.yaml ubuntu@13.201.8.113:/home/ubuntu'
                     
                     script {
+                        // Ensure kubectl permissions are set correctly
+                        sh 'ssh ubuntu@13.201.8.113 "sudo chmod +x /usr/local/bin/kubectl"'
+                        
                         try {
                             // Apply Kubernetes configurations
                             sh 'ssh ubuntu@13.201.8.113 "kubectl apply -f /home/ubuntu/deployment.yaml"'
