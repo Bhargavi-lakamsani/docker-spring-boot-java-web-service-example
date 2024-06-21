@@ -34,7 +34,7 @@ agent { label 'docker' }
 
         stage('Deploy') {
             steps {
-                sh "docker run -d -p 8080:8080 ${DOCKER_IMAGE_NAME}"
+                sh "docker run -d -p 80:8080 ${DOCKER_IMAGE_NAME}"
             }
         }
     }
